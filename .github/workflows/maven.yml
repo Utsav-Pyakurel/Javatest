@@ -24,7 +24,7 @@ jobs:
       run: mvn -B package --file pom.xml
     - name: Cleanup PSE
       if: always()
-      uses: predictive-speculative-execution/cleanup-pse@v1
+      uses: invisirisk/pse-action@latest
 
   gather_status_build_test:
     needs: build_test
@@ -36,7 +36,7 @@ jobs:
       packages: read
     steps:
       - name: Gather Status
-        uses: predictive-speculative-execution/gather-status@v1
+        uses: invisirisk/pse-action@latest
         with:
           api_key: ${{ secrets.PSE_API_KEY_BUILD_TEST }}
 
@@ -62,8 +62,7 @@ jobs:
         path: staging
     - name: Cleanup PSE
       if: always()
-      uses: predictive-speculative-execution/cleanup-pse@v1
-
+      uses: invisirisk/pse-action@latest
   gather_status_publish-job:
     needs: publish-job
     if: always()
@@ -74,6 +73,6 @@ jobs:
       packages: read
     steps:
       - name: Gather Status
-        uses: predictive-speculative-execution/gather-status@v1
+        uses: invisirisk/pse-action@latest
         with:
           api_key: ${{ secrets.PSE_API_KEY_PUBLISH_JOB }}
