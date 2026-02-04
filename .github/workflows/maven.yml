@@ -3,6 +3,11 @@ name: Java Maven Build & Publish Artifact
 on:
   workflow_dispatch:
 
+permissions:
+  checks: write
+  contents: write
+  packages: read
+
 jobs:
   build_test:
 
@@ -12,7 +17,8 @@ jobs:
     - name: Setup PSE
       uses: invisirisk/pse-action@latest
       with:
-        api_key: ${{ secrets.PSE_API_KEY_BUILD_TEST }}
+        api_url: "https://app.stage.invisirisk.com"
+        app_token: ${{ secrets.IR_API_KEY_BUILD_TEST }}
     - uses: actions/checkout@v3
     - name: Set up JDK 17
       uses: actions/setup-java@v3
@@ -25,20 +31,22 @@ jobs:
     - name: Cleanup PSE
       if: always()
       uses: invisirisk/pse-action@latest
+      with:
+        cleanup: "true"
 
   gather_status_build_test:
+    runs-on: ubuntu-latest
+    name: Gather Status for build_test
     needs: build_test
     if: always()
-    runs-on: ubuntu-latest
-    permissions:
-      checks: write
-      contents: read
-      packages: read
     steps:
       - name: Gather Status
         uses: invisirisk/pse-action@latest
         with:
-          api_key: ${{ secrets.PSE_API_KEY_BUILD_TEST }}
+          api_url: "https://app.stage.invisirisk.com"
+          app_token: ${{ secrets.IR_API_KEY_BUILD_TEST }}
+          send_job_status: "true"
+          debug: "true"
 
    
   publish-job:
@@ -48,7 +56,8 @@ jobs:
     - name: Setup PSE
       uses: invisirisk/pse-action@latest
       with:
-        api_key: ${{ secrets.PSE_API_KEY_PUBLISH_JOB }}
+        api_url: "https://app.stage.invisirisk.com"
+        app_token: ${{ secrets.IR_API_KEY_PUBLISH_JOB }}
     - uses: actions/checkout@v3
     - uses: actions/setup-java@v3
       with:
@@ -63,16 +72,19 @@ jobs:
     - name: Cleanup PSE
       if: always()
       uses: invisirisk/pse-action@latest
-  gather_status_publish-job:
+      with:
+        cleanup: "true"
+
+  gather_status_publish_job:
+    runs-on: ubuntu-latest
+    name: Gather Status for publish-job
     needs: publish-job
     if: always()
-    runs-on: ubuntu-latest
-    permissions:
-      checks: write
-      contents: read
-      packages: read
     steps:
       - name: Gather Status
         uses: invisirisk/pse-action@latest
         with:
-          api_key: ${{ secrets.PSE_API_KEY_PUBLISH_JOB }}
+          api_url: "https://app.stage.invisirisk.com"
+          app_token: ${{ secrets.IR_API_KEY_PUBLISH_JOB }}
+          send_job_status: "true"
+          debug: "true"
